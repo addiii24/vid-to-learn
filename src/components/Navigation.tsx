@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -28,9 +33,26 @@ export const Navigation = () => {
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
-            <Button variant="outline-hero" size="sm">
-              Get Started
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="floating" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    Account
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="outline-hero" size="sm" onClick={() => navigate('/auth')}>
+                Get Started
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -58,9 +80,16 @@ export const Navigation = () => {
               <a href="#pricing" className="block text-muted-foreground hover:text-foreground transition-colors">
                 Pricing
               </a>
-              <Button variant="outline-hero" size="sm" className="w-full">
-                Get Started
-              </Button>
+              {user ? (
+                <Button variant="outline-hero" size="sm" className="w-full" onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              ) : (
+                <Button variant="outline-hero" size="sm" className="w-full" onClick={() => navigate('/auth')}>
+                  Get Started
+                </Button>
+              )}
             </div>
           </div>
         )}
